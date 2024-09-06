@@ -1,0 +1,31 @@
+@import 'component/_compScrollbar';
+ 
+html, body {
+  @apply w-screen bg-gray-100 font-normal text-gray-800 dark:bg-gray-900 dark:text-gray-200;
+  overflow-wrap: anywhere;
+  font-family: 'Raleway', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+}
+html { @apply overflow-x-hidden; }
+body { @apply min-h-screen lg:overflow-x-hidden; }
+ 
+.layout-enter-active,
+.layout-leave-active {
+  transition: .3s;
+}
+.layout-enter,
+.layout-leave-active {
+  transform: translateY(15px);
+  opacity: 0;
+}
+ 
+.page-enter-active,
+.page-leave-active {
+  transition: .3s;
+}
+.page-enter,
+.page-leave-active {
+  transform: translateY(15px);
+  opacity: 0;
+}

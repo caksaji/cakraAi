@@ -1,0 +1,13 @@
+@media(min-width: 1024px) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-height: thin;
+    scrollbar-color: gray transparent;
+    &::-webkit-scrollbar {
+      width: 8px;
+      height: 1px;
+    }
+    &::-webkit-scrollbar-track { @apply bg-transparent; }
+    &::-webkit-scrollbar-thumb { @apply bg-prime-800 rounded-full; }
+  }
+}
