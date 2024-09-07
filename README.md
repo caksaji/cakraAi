@@ -6,4 +6,3 @@
 - [X] Simulate chat
 - [ ] Create error page
 - [ ] Create error component
-- [ ] Connect to auth API

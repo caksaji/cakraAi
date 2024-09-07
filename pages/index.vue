@@ -43,7 +43,20 @@
               :disabled="disableChat"
               class="max-h-40 w-full outline-0 resize-none bg-transparent placeholder:text-gray-400"
               @keydown="inputKeydown"
+              @focus="setInputCursorPosition"
               @input="setInputHeight"
+            />
+          </div>
+          <div class="flex items-center justify-center relative h-12 px-2">
+            <IconSvg name="emoji" class="h-6 w-6 cursor-pointer click-effect" @click="toggleEmojiPanel" />
+            <NuxtEmojiPicker
+              native
+              theme="auto"
+              :static-texts="{ placeholder: 'Cari emoji', skinTone: 'Warna'}"
+              class="absolute bottom-full -right-16 transform duration-300"
+              :class="{ 'translate-y-12 opacity-0': !showEmojiPanel }"
+              :style="{ height: !showEmojiPanel ? 0 : null }"
+              @select="selectEmoji"
             />
           </div>
           <div
@@ -69,8 +82,10 @@ import IconSvg from '~/components/partial/IconSvg'
 const userCookie = useCookie('user')
 const authStore = useAuthStore()
 const input = ref(null)
+const inputCursorPosition = ref(0)
 const chatAreaPadding = ref()
-const cmd = ref()
+const cmd = ref('')
+const showEmojiPanel = ref(false)
 const message = ref([])
 const inputLogin = ref({ username: null, password: null })
 const disableChat = ref(true)
@@ -96,6 +111,10 @@ const setInputHeight = () => {
   inp.style.height = 'auto'
   inp.style.height = `${input.value.scrollHeight}px`
   chatAreaPadding.value = !disableChat.value ? `calc((.25rem * 2) + (.25rem * 2) + 3rem + ${inp.style.height})` : '1rem'
+  setInputCursorPosition()
+}
+const setInputCursorPosition = () => {
+  inputCursorPosition.value = input.value.selectionStart
 }
 const loadChat = () => {
   message.value = [
@@ -121,6 +140,20 @@ const inputKeydown = (e) => {
     e.preventDefault()
     submitInput()
   }
+}
+const toggleEmojiPanel = () => showEmojiPanel.value = !disableChat.value ? !showEmojiPanel.value : false
+const selectEmoji = (emoji) => {
+  cmd.value += emoji.i
+  toggleEmojiPanel()
+  // const start = cmd.value.slice(0, inputCursorPosition.value)
+  // const end = cmd.value.slice(inputCursorPosition.value)
+  // cmd.value = `${start}${emoji.i}${end}`
+  // inputCursorPosition.value += emoji.r.length
+  // toggleEmojiPanel()
+  // $nextTick(() => {
+  //   input.value.setSelectionRange(inputCursorPosition.value, inputCursorPosition.value)
+  //   input.value.focus()
+  // })
 }
 const addBubble = (chat) => {
   message.value.push({
