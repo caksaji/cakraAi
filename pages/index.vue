@@ -1,14 +1,29 @@
 <template>
   <div>
     <div class="h-full pt-4" :style="{ paddingBottom: chatAreaPadding }">
-      <div class="container max-w-screen-md">
-        <div class="space-y-4">
-          <div v-for="(m, index) in message" :key="index" class="flex" :class="{ 'justify-end': m.by === 'me' }">
-            <div class="w-10/12 py-2 px-3 rounded-b-3xl md:w-8/12" :class="{ 'rounded-tr-3xl bg-gray-300 dark:bg-gray-700': m.by === 'friend', 'rounded-tl-3xl bg-prime-600': m.by === 'me' }">
-              {{ m.message }}
-              <div class="pt-2 text-right opacity-50">
-                {{ m.at }}
-              </div>
+      <div class="container max-w-screen-md" style="line-height: 1.25;">
+        <div
+          v-for="(m, index) in message"
+          :key="index"
+          class="flex"
+          :class="[
+            { 'justify-end': m.by === 'me' },
+            index > 0 && message[index - 1].by !== m.by ? 'mt-4' : index > 0 ? 'mt-1' : null
+          ]"
+        >
+          <div class="w-10/12 py-2 px-3 rounded-b-2xl md:w-8/12"
+            :class="[
+              {
+                'bg-gray-300 dark:bg-gray-700': m.by === 'friend',
+                'bg-prime-600': m.by === 'me'
+              },
+              m.by === 'friend' ? 'rounded-tr-2xl' : m.by === 'me' ? 'rounded-tl-2xl' : null,
+              (index > 0 && m.by === 'friend' && message[index - 1].by === m.by) || (index > 0 && m.by === 'me' && message[index - 1].by === m.by) ? 'rounded-t-2xl' : null
+            ]"
+          >
+            {{ m.message }}
+            <div class="pt-1 text-right opacity-50">
+              {{ m.at }}
             </div>
           </div>
         </div>
@@ -40,6 +55,7 @@
 <script setup>
 import IconSvg from '~/components/partial/IconSvg'
 
+const userCookie = useCookie('user')
 const input = ref(null)
 const chatAreaPadding = ref()
 const cmd = ref()
@@ -47,7 +63,23 @@ const message = ref([])
 
 onMounted(() => {
   setInputHeight()
-  loadChat()
+  if (userCookie.value) {
+    loadChat()
+  }
+  else {
+    message.value.push({
+      by: 'friend',
+      message: 'Halo👋 gimana kabarnya? Yuk kenalan dulu...',
+      at: `${new Date().getHours().toString()}:${new Date().getMinutes().toString()}`
+    })
+    setTimeout(() => {
+      message.value.push({
+        by: 'friend',
+        message: 'Masukkan username kamu',
+        at: `${new Date().getHours().toString()}:${new Date().getMinutes().toString()}`
+      })
+    }, 3000)
+  }
 })
 
 const setInputHeight = () => {
