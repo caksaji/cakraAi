@@ -21,8 +21,10 @@
               (index > 0 && m.by === 'friend' && message[index - 1].by === m.by) || (index > 0 && m.by === 'me' && message[index - 1].by === m.by) ? 'rounded-t-2xl' : null
             ]"
           >
-            {{ m.message }}
-            <div class="pt-1 text-right opacity-50">
+            <div class="text-wrap whitespace-pre">
+              {{ m.message }}
+            </div>
+            <div class="pt-1 text-right" :class="{ 'opacity-40': m.by === 'friend', 'opacity-60': m.by === 'me' }">
               {{ m.at }}
             </div>
           </div>
@@ -43,7 +45,15 @@
               @input="setInputHeight"
             />
           </div>
-          <div v-wave class="flex flex-shrink-0 items-center justify-center h-12 w-12 rounded-full bg-prime-600" :class="{ 'cursor-not-allowed': !cmd, 'cursor-pointer click-effect': cmd }" @click="submitInput">
+          <div
+            v-wave
+            :tabindex="cmd ? 0 : -1"
+            class="flex flex-shrink-0 items-center justify-center h-12 w-12 rounded-full outline-0 bg-prime-600 ring-prime-600 ring-opacity-90 focus:ring focus:ring-offset-2 dark:ring-offset-gray-800"
+            :class="{ 'cursor-not-allowed': !cmd, 'cursor-pointer click-effect': cmd }"
+            @click="submitInput"
+            @keydown.enter="submitInput"
+            @keydown.space="submitInput"
+          >
             <IconSvg name="send" class="h-6 w-6" />
           </div>
         </div>
@@ -114,7 +124,13 @@ const inputKeydown = (e) => {
   }
 }
 const submitInput = () => {
-  console.log('Enter key pressed')
+  message.value.push({
+    by: 'me',
+    message: cmd.value,
+    at: `${new Date().getHours().toString()}:${new Date().getMinutes().toString()}`
+  })
+  setTimeout(() => cmd.value = null, 500)
+  setTimeout(() => setInputHeight(), 700)
 }
 </script>
 
