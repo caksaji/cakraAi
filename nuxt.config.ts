@@ -15,6 +15,7 @@ export default defineNuxtConfig({
     '@nuxtjs/color-mode',
     'v-wave/nuxt',
     '@nuxtjs/google-fonts',
+    '@nuxtjs/mdc',
     'nuxt-emoji-picker'
   ],
   alias: { pinia: '/node_modules/@pinia/nuxt/node_modules/pinia/dist/pinia.mjs' },

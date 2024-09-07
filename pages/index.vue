@@ -21,9 +21,7 @@
               (index > 0 && m.by === 'friend' && message[index - 1].by === m.by) || (index > 0 && m.by === 'me' && message[index - 1].by === m.by) ? 'rounded-t-2xl' : null
             ]"
           >
-            <div class="text-wrap whitespace-pre">
-              {{ m.message }}
-            </div>
+            <MDC :value="m.message" class="text-wrap whitespace-pre prose dark:prose-invert" />
             <div class="pt-1 text-right" :class="{ 'opacity-40': m.by === 'friend', 'opacity-60': m.by === 'me' }">
               {{ m.at }}
             </div>

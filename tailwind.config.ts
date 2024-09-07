@@ -13,5 +13,8 @@ export default <Partial<Config>>{
         prime: colors.pink
       }
     }
-  }
+  },
+  plugins: [
+    require('@tailwindcss/typography')
+  ]
 }
