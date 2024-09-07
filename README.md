@@ -1,7 +1,7 @@
 # Development Plan
 
-- [ ] Create login UI
-- [ ] Simulate login using dummyjson.com
+- [X] Create login UI
+- [X] Simulate login using dummyjson.com
 - [X] Create chat UI
 - [X] Simulate chat
 - [ ] Create error page

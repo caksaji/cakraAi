@@ -67,17 +67,20 @@
 import IconSvg from '~/components/partial/IconSvg'
 
 const userCookie = useCookie('user')
+const authStore = useAuthStore()
 const input = ref(null)
 const chatAreaPadding = ref()
 const cmd = ref()
 const message = ref([])
-const inputLogin = ref({ un: null, pw: null })
+const inputLogin = ref({ username: null, password: null })
 const disableChat = ref(true)
 
 onMounted(() => {
   setInputHeight()
   if (userCookie.value) {
-    loadChat()
+    addBubble({ by: 'friend', message: `Halo ${userCookie.value.firstName}👋 apa kabar?`, at: 'now' })
+    // loadChat()
+    disableChat.value = false
   }
   else {
     addBubble({ by: 'friend', message: 'Halo👋 apa kabar? Yuk kenalan...', at: 'now' })
@@ -123,7 +126,7 @@ const addBubble = (chat) => {
   message.value.push({
     by: chat.by,
     message: chat.message,
-    at: chat.at === 'now' ? `${new Date().getHours().toString()}:${new Date().getMinutes().toString()}` : chat.at
+    at: chat.at === 'now' ? `${new Date().getHours() < 10 ? '0' + new Date().getHours().toString() : new Date().getHours()}:${new Date().getMinutes() < 10 ? '0' + new Date().getMinutes().toString() : new Date().getMinutes()}` : chat.at
   })
 }
 const submitInput = () => {
@@ -132,14 +135,14 @@ const submitInput = () => {
       addBubble()
     }
     else {
-      if (!inputLogin.value.un) {
+      if (!inputLogin.value.username) {
         addBubble({ by: 'me', message: cmd.value, at: 'now' })
-        inputLogin.value.un = cmd.value
+        inputLogin.value.username = JSON.parse(JSON.stringify(cmd.value))
         setTimeout(() => addBubble({ by: 'friend', message: 'Sekarang masukkan kata sandi', at: 'now' }), 1000)
       }
       else {
         addBubble({ by: 'me', message: '•••••••••', at: 'now' })
-        inputLogin.value.pw = cmd.value
+        inputLogin.value.password = JSON.parse(JSON.stringify(cmd.value))
         login()
       }
     }
@@ -150,11 +153,20 @@ const resetInput = () => {
   setTimeout(() => cmd.value = null, 500)
   setTimeout(() => setInputHeight(), 700)
 }
-const login = () => {
+const login = async () => {
   disableChat.value = true
-  setTimeout(() => addBubble({ by: 'friend', message: 'Tunggu sebentar...', at: 'now' }), 1000)
-  alert('Login')
-  addBubble({ by: 'friend', message: 'Halo username', at: 'now' })
+  addBubble({ by: 'friend', message: 'Tunggu sebentar...', at: 'now' })
+  await authStore.login(inputLogin.value)
+    .then((res) => {
+      userCookie.value = res
+      addBubble({ by: 'friend', message: `Halo ${userCookie.value.firstName}👋 apa kabar?`, at: 'now' })
+    })
+    .catch((error) => {
+      inputLogin.value.username = null
+      inputLogin.value.password = null
+      addBubble({ by: 'friend', message: `Username / kata sandi salah, ${error.response._data.message}`, at: 'now' })
+      addBubble({ by: 'friend', message: 'Masukkan username kamu', at: 'now' })
+    })
   disableChat.value = false
 }
 </script>
