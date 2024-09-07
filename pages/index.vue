@@ -29,6 +29,11 @@
             </div>
           </div>
         </div>
+        <div v-if="loadingChat" class="mt-4">
+          <div class="w-60 p-4 rounded-tr-2xl rounded-b-2xl bg-gray-300 dark:bg-gray-700">
+            <div class="h-2 rounded-full bg-white loading-progress" />
+          </div>
+        </div>
       </div>
     </div>
     <div class="fixed bottom-0 left-0 w-screen bg-gray-100 transform duration-300 dark:bg-gray-900" :class="{ 'translate-y-full opacity-0': disableChat }">
@@ -80,7 +85,9 @@
 import IconSvg from '~/components/partial/IconSvg'
 
 const userCookie = useCookie('user')
+const geminiCookie = useCookie('gemini')
 const authStore = useAuthStore()
+const chatStore = useChatStore()
 const input = ref(null)
 const inputCursorPosition = ref(0)
 const chatAreaPadding = ref()
@@ -89,8 +96,10 @@ const showEmojiPanel = ref(false)
 const message = ref([])
 const inputLogin = ref({ username: null, password: null })
 const disableChat = ref(true)
+const loadingChat = ref(false)
 
 onMounted(() => {
+  geminiCookie.value = 'AIzaSyAUV0-1FcPFwSYn1g9jezUm1Iijrm5HQTA'
   setInputHeight()
   if (userCookie.value) {
     addBubble({ by: 'friend', message: `Halo ${userCookie.value.firstName}👋 apa kabar?`, at: 'now' })
@@ -162,10 +171,21 @@ const addBubble = (chat) => {
     at: chat.at === 'now' ? `${new Date().getHours() < 10 ? '0' + new Date().getHours().toString() : new Date().getHours()}:${new Date().getMinutes() < 10 ? '0' + new Date().getMinutes().toString() : new Date().getMinutes()}` : chat.at
   })
 }
-const submitInput = () => {
+const submitInput = async () => {
   if (!disableChat.value) {
     if (userCookie.value) {
-      addBubble()
+      addBubble({ by: 'me', message: cmd.value, at: 'now' })
+      disableChat.value = true
+      loadingChat.value = true
+      await chatStore.sendMessage(cmd.value)
+        .then((res) => {
+          addBubble({ by: 'friend', message: res.candidates[0].content.parts[0].text, at: 'now' })
+        })
+        .catch((error) => {
+          addBubble({ by: 'friend', message: error.response._data.message, at: 'now' })
+        })
+      disableChat.value = false
+      loadingChat.value = false
     }
     else {
       if (!inputLogin.value.username) {
@@ -188,11 +208,11 @@ const resetInput = () => {
 }
 const login = async () => {
   disableChat.value = true
-  addBubble({ by: 'friend', message: 'Tunggu sebentar...', at: 'now' })
+  loadingChat.value = true
   await authStore.login(inputLogin.value)
     .then((res) => {
       userCookie.value = res
-      addBubble({ by: 'friend', message: `Halo ${userCookie.value.firstName}👋 apa kabar?`, at: 'now' })
+      addBubble({ by: 'friend', message: `Halo ${userCookie.value.firstName}👋 mau tahu apa kali ini?`, at: 'now' })
     })
     .catch((error) => {
       inputLogin.value.username = null
@@ -201,9 +221,21 @@ const login = async () => {
       addBubble({ by: 'friend', message: 'Masukkan username kamu', at: 'now' })
     })
   disableChat.value = false
+  loadingChat.value = false
 }
 </script>
 
 <style lang="less" scoped>
   .click-effect { @apply transform duration-300 active:scale-90; }
+  .loading-progress {
+    animation-name: loading-progress;
+    animation-duration: 1s;
+    animation-direction: alternate;
+    animation-fill-mode: both;
+    animation-iteration-count: infinite;
+  }
+  @keyframes loading-progress {
+    0% { width: 0; }
+    100% { width: 100%; }
+  }
 </style>
