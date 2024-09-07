@@ -18,9 +18,17 @@
       <div class="container max-w-screen-md py-4">
         <div class="flex items-end justify-between w-full space-x-2 p-1 rounded-[1.7rem] bg-gray-300 dark:bg-gray-700">
           <div class="w-full py-1 pl-2">
-            <textarea v-model="cmd" ref="input" rows="1" placeholder="Ketik sesuatu disini" class="max-h-40 w-full outline-0 resize-none bg-transparent placeholder:text-gray-400" @input="setInputHeight" />
+            <textarea
+              v-model="cmd"
+              ref="input"
+              rows="1"
+              placeholder="Ketik sesuatu disini"
+              class="max-h-40 w-full outline-0 resize-none bg-transparent placeholder:text-gray-400"
+              @keydown="inputKeydown"
+              @input="setInputHeight"
+            />
           </div>
-          <div v-wave class="flex flex-shrink-0 items-center justify-center h-12 w-12 rounded-full bg-prime-600" :class="{ 'cursor-not-allowed': !cmd, 'cursor-pointer click-effect': cmd }">
+          <div v-wave class="flex flex-shrink-0 items-center justify-center h-12 w-12 rounded-full bg-prime-600" :class="{ 'cursor-not-allowed': !cmd, 'cursor-pointer click-effect': cmd }" @click="submitInput">
             <IconSvg name="send" class="h-6 w-6" />
           </div>
         </div>
@@ -66,6 +74,15 @@ const loadChat = () => {
       at: '02:30'
     }
   ]
+}
+const inputKeydown = (e) => {
+  if (e.key === 'Enter' && e.shiftKey) {
+    e.preventDefault()
+    submitInput()
+  }
+}
+const submitInput = () => {
+  console.log('Enter key pressed')
 }
 </script>
 
