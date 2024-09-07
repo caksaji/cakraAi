@@ -101,8 +101,9 @@ onMounted(() => {
   setInputHeight()
   if (userCookie.value) {
     addBubble({ by: 'friend', message: `Halo ${userCookie.value.firstName}👋 apa kabar?`, at: 'now' })
-    // loadChat()
     disableChat.value = false
+    cmd.value = 'Apa berita baik terkini?'
+    setTimeout(() => submitInput(), 500)
   }
   else {
     addBubble({ by: 'friend', message: 'Halo👋 apa kabar? Yuk kenalan...', at: 'now' })
@@ -122,25 +123,6 @@ const setInputHeight = () => {
 }
 const setInputCursorPosition = () => {
   inputCursorPosition.value = input.value.selectionStart
-}
-const loadChat = () => {
-  message.value = [
-    {
-      by: 'friend',
-      message: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugit reiciendis accusamus cumque rem? Facere consectetur reprehenderit quia voluptate.',
-      at: '02:28'
-    },
-    {
-      by: 'me',
-      message: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugit reiciendis accusamus cumque rem? Facere consectetur reprehenderit quia voluptate.',
-      at: '02:29'
-    },
-    {
-      by: 'friend',
-      message: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugit reiciendis accusamus cumque rem? Facere consectetur reprehenderit quia voluptate.',
-      at: '02:30'
-    }
-  ]
 }
 const inputKeydown = (e) => {
   if (e.key === 'Enter' && e.shiftKey) {
@@ -211,6 +193,8 @@ const login = async () => {
     .then((res) => {
       userCookie.value = res
       addBubble({ by: 'friend', message: `Halo ${userCookie.value.firstName}👋 mau tahu apa kali ini?`, at: 'now' })
+      cmd.value = 'Apa berita baik terkini?'
+      setTimeout(() => submitInput(), 500)
     })
     .catch((error) => {
       inputLogin.value.username = null
