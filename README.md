@@ -1,3 +1,5 @@
+# Demo
+[https://nuxtchatbot.netlify.app](https://nuxtchatbot.netlify.app)
 # Development Plan
 - [X] Create login UI
 - [X] Simulate login using dummyjson.com
